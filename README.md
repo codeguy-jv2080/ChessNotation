@@ -83,3 +83,9 @@ Using **Reset** clears the saved game.
 A modern web browser with JavaScript enabled.
 
 The application is self-contained in a single HTML file and does not require a server or external installation.
+
+## License
+
+Chess Notation is licensed under GPL-3.0-or-later. See `LICENSE`.
+The embedded chess.js code remains under its BSD 2-Clause license; see
+`THIRD_PARTY_NOTICES.md` and the preserved notice inside the HTML file.
