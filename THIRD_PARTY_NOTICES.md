@@ -30,3 +30,25 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+## Cburnett chess piece artwork
+
+Copyright Colin M. L. Burnett.
+
+The application embeds the twelve black-and-white Cburnett chess piece SVGs
+used in Chess Playthrough. Their geometry is taken from python-chess 1.11.2;
+the piece artwork is offered under GFDL, BSD, and GPL license options. This
+distribution uses the GPL option, under the application's GPL-3.0-or-later
+license; see `LICENSE`. The SVG geometry is retained without changes and is
+embedded locally so the board works offline.
+
+Artwork source and license references:
+
+- [python-chess 1.11.2 SVG artwork](https://github.com/niklasf/python-chess/blob/v1.11.2/chess/svg.py)
+- [python-chess SVG artwork attribution and license options](https://python-chess.readthedocs.io/en/latest/svg.html)
+- [Lichess artwork notices](https://github.com/lichess-org/lila/blob/master/COPYING.md),
+  which identify the Cburnett piece set as Colin M. L. Burnett's work under
+  GPL-2.0-or-later.
+
+Only the artwork is reused; python-chess and Lichess are not runtime
+dependencies of this application.

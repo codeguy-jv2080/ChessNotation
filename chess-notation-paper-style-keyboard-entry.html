@@ -2,268 +2,280 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chess Notation</title>
   <style>
     :root {
-      --bg: #e4e4e4;
-      --card: #ececec;
-      --border: #c0c0c0;
-      --text: #222;
-      --muted: #666;
-      --btn: #d8d8d8;
-      --btn-h: #c8c8c8;
-      --accent: #3a6ea5;
-      --accent-h: #2c5282;
-      --danger: #a33;
-      --input: #e0e0e0;
+      color-scheme: light;
+      --bg: #F2F2F2; --card: #FFFFFF; --input: #FFFFFF;
+      --text: #171717; --muted: #484848; --border: #858585;
+      --btn: #FFFFFF; --btn-h: #E6E6E6; --focus: #005FCC;
+      --accent: #007BFF; --danger: #A51B1B;
+      --disabled-text: #696969; --disabled-bg: #E6E6E6; --disabled-border: #B8B8B8;
     }
     [data-theme="dark"] {
-      --bg: #1a1a1a;
-      --card: #2a2a2a;
-      --border: #444;
-      --text: #ddd;
-      --muted: #999;
-      --btn: #333;
-      --btn-h: #404040;
-      --accent: #4a90d9;
-      --accent-h: #3182ce;
-      --danger: #e06060;
-      --input: #2e2e2e;
+      color-scheme: dark;
+      --bg: #202020; --card: #2A2A2A; --input: #353535;
+      --text: #F5F5F5; --muted: #D2D2D2; --border: #858585;
+      --btn: #353535; --btn-h: #424242; --focus: #75BAFF;
+      --danger: #FFB7B7;
+      --disabled-text: #A3A3A3; --disabled-bg: #262626; --disabled-border: #555555;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      padding: 10px;
-      transition: background .15s, color .15s;
-    }
-    .topbar { display: flex; justify-content: flex-end; margin-bottom: 6px; }
-    #themeBtn {
-      padding: 5px 10px;
-      border: 1px solid var(--border);
-      border-radius: 5px;
-      background: var(--card);
-      color: var(--text);
-      font-size: .8rem;
-      cursor: pointer;
-    }
-    h1 { text-align: center; font-size: 1.25rem; font-weight: 600; margin-bottom: 8px; }
-    .wrap { max-width: 420px; margin: 0 auto; }
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 10px;
-      margin-bottom: 8px;
-    }
-    .card h2 {
-      font-size: .65rem;
-      font-weight: 600;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: .04em;
-      margin-bottom: 6px;
-    }
-    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-    label { display: block; font-size: .7rem; color: var(--muted); margin-bottom: 1px; }
-    input[type="text"], input[type="date"], select {
-      width: 100%;
-      padding: 6px 7px;
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      font-size: .85rem;
-      background: var(--input);
-      color: var(--text);
-    }
-    #current {
-      text-align: center;
-      font-family: ui-monospace, Consolas, monospace;
-      font-size: 1.4rem;
-      font-weight: 600;
-      padding: 10px;
-      background: var(--input);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      margin-bottom: 8px;
-      min-height: 48px;
-      letter-spacing: 1px;
-    }
-
-    .pad { display: grid; gap: 4px; margin-bottom: 6px; }
-    .pad.files, .pad.ranks { grid-template-columns: repeat(8, 1fr); }
-    .pad.pieces { grid-template-columns: repeat(6, 1fr); }
-    .pad.special { grid-template-columns: repeat(4, 1fr); }
-    .pad button {
-      padding: 10px 0;
-      border: 1px solid var(--border);
-      border-radius: 5px;
-      background: var(--btn);
-      color: var(--text);
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      font-family: ui-monospace, Consolas, monospace;
-    }
-    .pad button:hover { background: var(--btn-h); }
-    .pad button:active { filter: brightness(0.9); }
-    .pad.special button { font-size: .8rem; padding: 9px 0; }
-
-    #error, #recoveryWarning {
-      color: var(--danger);
-      font-size: .85rem;
-      min-height: 1.2em;
-      text-align: center;
-      margin-bottom: 4px;
-    }
-
-    #moves {
-      min-height: 90px;
-      max-height: 140px;
-      overflow-y: auto;
-      background: var(--input);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 8px;
-      font-family: ui-monospace, Consolas, monospace;
-      font-size: .9rem;
-      line-height: 1.55;
-      white-space: pre-wrap;
-    }
-
-    .row { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; }
-    button.action {
-      flex: 1;
-      min-width: 65px;
-      padding: 8px 6px;
-      border: 1px solid var(--border);
-      border-radius: 5px;
-      background: var(--card);
-      color: var(--text);
-      font-size: .8rem;
-      cursor: pointer;
-    }
-    button.action.primary {
-      background: var(--accent);
-      color: #fff;
-      border-color: var(--accent);
-    }
-    button.action.primary:hover { background: var(--accent-h); }
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    body { margin: 0; background: var(--bg); color: var(--text); font-family: "Segoe UI", system-ui, sans-serif; line-height: 1.5; }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    button, input, select, textarea { -webkit-tap-highlight-color: transparent; }
+    :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+    button:disabled { color: var(--disabled-text); background: var(--disabled-bg); border-color: var(--disabled-border); cursor: default; }
+    .wrap { width: min(1100px, calc(100% - 48px), max(800px, calc(100svh + 24px))); margin: 0 auto; padding: 28px 0 24px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 24px; }
+    .eyebrow { margin: 0 0 3px; font-size: .72rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+    h1 { margin: 0; font-size: clamp(1.55rem, 4vw, 2rem); line-height: 1.2; letter-spacing: -.035em; font-weight: 650; }
+    .subtitle { margin: 7px 0 0; color: var(--muted); font-size: .9rem; }
+    .themes { display: flex; gap: 4px; padding: 4px; border: 1px solid var(--border); border-radius: 8px; background: var(--card); flex-shrink: 0; }
+    .themes button { border: 1px solid transparent; border-radius: 4px; padding: 6px 13px; background: transparent; color: var(--text); font-size: .82rem; font-weight: 600; }
+    .themes button:hover { background: var(--btn-h); }
+    .themes button[aria-pressed="true"] { background: var(--accent); color: #FFFFFF; }
+    .workspace { display: grid; grid-template-columns: minmax(0, 1fr) 290px; gap: 20px; align-items: start; }
+    .board-column, .sidebar { min-width: 0; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; }
+    .card h2 { margin: 0; font-size: .93rem; font-weight: 650; }
+    .section-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+    .section-note { font-size: .75rem; color: var(--muted); }
+    .board-card { padding: 18px; }
+    .turn-label { display: inline-flex; align-items: center; gap: 7px; font-size: .8rem; font-weight: 600; }
+    .turn-label::before { content: ""; width: 11px; height: 11px; border-radius: 50%; background: #FFFFFF; border: 1px solid #858585; }
+    .turn-label[data-turn="b"]::before { background: #171717; }
+    .board-frame { display: grid; grid-template-columns: 24px minmax(0, 1fr); grid-template-rows: auto 24px; grid-template-areas: "ranks board" ". files"; }
+    .board { grid-area: board; display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); aspect-ratio: 1; width: 100%; border: 1px solid #6B4B2E; user-select: none; }
+    .square { position: relative; isolation: isolate; display: block; width: 100%; aspect-ratio: 1; border: 0; border-radius: 0; padding: 0; touch-action: manipulation; background: #F0D9B5; color: #6B4B2E; }
+    .square.dark { background: #B58863; color: #F9EEDC; }
+    .square::before { content: ""; position: absolute; inset: 0; pointer-events: none; z-index: -1; }
+    .square.last-move::before { background: rgba(209, 203, 65, .38); }
+    .square.selected::before { background: rgba(246, 232, 86, .58); box-shadow: inset 0 0 0 3px #007BFF; }
+    .square.in-check::before { background: radial-gradient(ellipse, rgba(211, 36, 36, .76), rgba(211, 36, 36, .12) 75%); }
+    .square.legal-move::after { content: ""; position: absolute; width: 23%; height: 23%; left: 38.5%; top: 38.5%; border-radius: 50%; background: rgba(32, 32, 32, .28); pointer-events: none; }
+    .square.legal-capture::after { content: ""; position: absolute; inset: 4%; border: 5px solid rgba(32, 32, 32, .3); border-radius: 50%; pointer-events: none; }
+    .square:focus-visible { z-index: 2; outline: 3px solid var(--focus); outline-offset: -3px; }
+    .piece { display: block; position: absolute; width: 86%; height: 86%; left: 7%; top: 7%; pointer-events: none; }
+    .piece svg { width: 100%; height: 100%; display: block; }
+    .coordinates { display: grid; color: var(--muted); font-size: 12px; line-height: 1; font-weight: 700; user-select: none; }
+    .coordinates span { display: grid; place-items: center; }
+    .rank-coordinates { grid-area: ranks; grid-template-rows: repeat(8, minmax(0, 1fr)); padding-block: 1px; }
+    .file-coordinates { grid-area: files; grid-template-columns: repeat(8, minmax(0, 1fr)); padding-inline: 1px; }
+    .board-status { min-height: 1.5em; font-size: .83rem; color: var(--muted); margin: 12px 0 0; }
+    .row { display: flex; flex-wrap: wrap; gap: 8px; }
+    button.action { padding: 9px 14px; min-height: 40px; border: 1px solid var(--border); border-radius: 6px; background: var(--btn); color: var(--text); font-size: .83rem; font-weight: 600; }
+    button.action:hover { background: var(--btn-h); }
+    button.action.primary { background: var(--accent); border-color: var(--accent); color: #FFFFFF; }
+    button.action.primary:hover { filter: brightness(.92); }
     button.action.danger { color: var(--danger); }
-
-    #pgnOut {
-      width: 100%;
-      height: 90px;
-      font-family: ui-monospace, Consolas, monospace;
-      font-size: .75rem;
-      border: 1px solid var(--border);
-      border-radius: 5px;
-      padding: 7px;
-      background: var(--input);
-      color: var(--text);
-      resize: vertical;
+    .game-actions { margin-top: 16px; justify-content: space-between; }
+    .game-actions .action { flex: 1; padding-left: 6px; padding-right: 6px; }
+    #error, #recoveryWarning { color: var(--danger); font-size: .84rem; }
+    #error:empty { display: none; }
+    #error { margin: 10px 0 0; }
+    #recoveryWarning { background: var(--card); border: 1px solid var(--danger); border-radius: 8px; margin: 0 0 18px; padding: 12px 16px; }
+    .promotion-panel { margin-top: 14px; padding: 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); }
+    .promotion-panel p { font-size: .85rem; margin: 0 0 10px; font-weight: 600; }
+    .promotion-options { display: flex; gap: 6px; flex-wrap: wrap; }
+    .promotion-options button { flex: 1; min-width: 48px; border: 1px solid var(--border); border-radius: 5px; background: var(--btn); color: var(--text); padding: 5px; font-size: .72rem; }
+    .promotion-options button:hover { background: var(--btn-h); }
+    .promotion-options svg { display: block; width: 40px; height: 40px; margin: 0 auto; }
+    #cancelPromotion { margin-top: 9px; }
+    .sidebar { display: flex; flex-direction: column; gap: 16px; }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    label { display: block; font-size: .75rem; font-weight: 600; color: var(--muted); margin-bottom: 4px; }
+    input[type="text"], input[type="date"], select { width: 100%; min-width: 0; min-height: 35px; padding: 5px 8px; border: 1px solid var(--border); border-radius: 5px; background: var(--input); color: var(--text); font-size: .83rem; }
+    input::placeholder { color: var(--muted); opacity: 1; }
+    .moves-heading { display: grid; grid-template-columns: 30px 1fr 1fr; color: var(--muted); font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; padding: 0 0 8px; border-bottom: 1px solid var(--border); }
+    #moves { min-height: 70px; max-height: 224px; overflow-y: auto; font: .88rem/1.9 ui-monospace, Consolas, monospace; padding-top: 9px; }
+    .move-row { display: grid; grid-template-columns: 30px 1fr 1fr; }
+    .move-number { color: var(--muted); }
+    .pgn-card { margin-top: 20px; }
+    .pgn-card .section-head { margin-bottom: 12px; }
+    #pgnOut { display: block; width: 100%; min-height: 130px; padding: 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--input); color: var(--text); resize: vertical; font: .8rem/1.7 ui-monospace, Consolas, monospace; }
+    .foot { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-top: 16px; color: var(--muted); font-size: .72rem; }
+    .foot a { color: inherit; }
+    @media (max-width: 760px) {
+      .wrap { width: calc(100% - 28px); padding-top: 18px; }
+      .topbar { align-items: flex-start; gap: 10px; margin-bottom: 18px; }
+      .themes button { padding: 6px 10px; }
+      .subtitle { max-width: 235px; }
+      .workspace { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+      .sidebar { display: grid; grid-template-columns: 1fr 1fr; align-items: start; }
+      .board-card { padding: 12px; }
+      .card { border-radius: 8px; }
+      .pgn-card .section-head { align-items: flex-start; flex-wrap: wrap; }
     }
-    .foot { text-align: center; font-size: .65rem; color: var(--muted); margin-top: 4px; }
-    @media (max-width: 400px) {
-      .grid2 { grid-template-columns: 1fr; }
-      .pad button { padding: 9px 0; font-size: .9rem; }
+    @media (max-width: 480px) {
+      .sidebar { display: flex; align-items: stretch; }
+      .sidebar .moves-card { order: -1; }
+      .topbar { flex-wrap: wrap; }
+      .themes { margin-top: 2px; }
+      .card { padding: 12px; }
+      #moves { max-height: 150px; }
+      .game-actions { gap: 5px; }
+      .pgn-card .row { width: 100%; }
+      .pgn-card .action { flex: 1; }
     }
   </style>
 </head>
 <body>
-  <div class="topbar"><button id="themeBtn">Dark</button></div>
-  <h1>Chess Notation</h1>
-  <div class="wrap">
-
-    <div class="card">
-      <h2>Game Info</h2>
-      <div class="grid2">
-        <div><label>Event</label><input type="text" id="event"></div>
-        <div><label>Site</label><input type="text" id="site"></div>
-        <div><label>White</label><input type="text" id="white"></div>
-        <div><label>Black</label><input type="text" id="black"></div>
-        <div><label>Round</label><input type="text" id="round"></div>
-        <div><label>Date</label><input type="date" id="date"></div>
-        <div><label>Time Control</label><input type="text" id="timeControl"></div>
-        <div><label>Result</label><select id="result">
-          <option value="*" selected>*</option>
-          <option value="1-0">1-0</option>
-          <option value="0-1">0-1</option>
-          <option value="1/2-1/2">1/2-1/2</option>
-        </select></div>
+  <main class="wrap">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Your game, move by move</p>
+        <h1>Chess Notation</h1>
+        <p class="subtitle">Play the moves. Keep the record.</p>
       </div>
-    </div>
-
-    <input type="text" id="current" autocomplete="off" autocapitalize="none" spellcheck="false" aria-label="Current move">
-    <div id="error"></div>
+      <div class="themes" role="group" aria-label="Appearance">
+        <button type="button" id="lightTheme" aria-pressed="true">Light</button>
+        <button type="button" id="darkTheme" aria-pressed="false">Dark</button>
+      </div>
+    </header>
     <p id="recoveryWarning" role="alert" hidden>Saved game could not be restored. Your original save is unchanged. Autosave is paused; Reset will discard that save and start a new game.</p>
-
-    <div class="row">
-      <button class="action" id="backspace">⌫</button>
-      <button class="action" id="clearMove">Clear</button>
-      <button class="action primary" id="submit">Enter Move</button>
+    <div class="workspace">
+      <section class="board-column" aria-label="Move entry">
+        <div class="card board-card">
+          <div class="section-head">
+            <h2>Board</h2>
+            <span id="turnLabel" class="turn-label" data-turn="w" role="status" aria-live="polite">White to move</span>
+          </div>
+          <div class="board-frame">
+          <div class="coordinates rank-coordinates" aria-hidden="true">
+            <span>8</span><span>7</span><span>6</span><span>5</span><span>4</span><span>3</span><span>2</span><span>1</span>
+          </div>
+          <div id="board" class="board" role="group" aria-label="Chessboard. Select a piece, then its destination. Use arrow keys to navigate squares.">
+            <button type="button" id="sq-a8" class="square" data-square="a8" aria-label="a8" tabindex="-1"></button>
+            <button type="button" id="sq-b8" class="square dark" data-square="b8" aria-label="b8" tabindex="-1"></button>
+            <button type="button" id="sq-c8" class="square" data-square="c8" aria-label="c8" tabindex="-1"></button>
+            <button type="button" id="sq-d8" class="square dark" data-square="d8" aria-label="d8" tabindex="-1"></button>
+            <button type="button" id="sq-e8" class="square" data-square="e8" aria-label="e8" tabindex="-1"></button>
+            <button type="button" id="sq-f8" class="square dark" data-square="f8" aria-label="f8" tabindex="-1"></button>
+            <button type="button" id="sq-g8" class="square" data-square="g8" aria-label="g8" tabindex="-1"></button>
+            <button type="button" id="sq-h8" class="square dark" data-square="h8" aria-label="h8" tabindex="-1"></button>
+            <button type="button" id="sq-a7" class="square dark" data-square="a7" aria-label="a7" tabindex="-1"></button>
+            <button type="button" id="sq-b7" class="square" data-square="b7" aria-label="b7" tabindex="-1"></button>
+            <button type="button" id="sq-c7" class="square dark" data-square="c7" aria-label="c7" tabindex="-1"></button>
+            <button type="button" id="sq-d7" class="square" data-square="d7" aria-label="d7" tabindex="-1"></button>
+            <button type="button" id="sq-e7" class="square dark" data-square="e7" aria-label="e7" tabindex="-1"></button>
+            <button type="button" id="sq-f7" class="square" data-square="f7" aria-label="f7" tabindex="-1"></button>
+            <button type="button" id="sq-g7" class="square dark" data-square="g7" aria-label="g7" tabindex="-1"></button>
+            <button type="button" id="sq-h7" class="square" data-square="h7" aria-label="h7" tabindex="-1"></button>
+            <button type="button" id="sq-a6" class="square" data-square="a6" aria-label="a6" tabindex="-1"></button>
+            <button type="button" id="sq-b6" class="square dark" data-square="b6" aria-label="b6" tabindex="-1"></button>
+            <button type="button" id="sq-c6" class="square" data-square="c6" aria-label="c6" tabindex="-1"></button>
+            <button type="button" id="sq-d6" class="square dark" data-square="d6" aria-label="d6" tabindex="-1"></button>
+            <button type="button" id="sq-e6" class="square" data-square="e6" aria-label="e6" tabindex="-1"></button>
+            <button type="button" id="sq-f6" class="square dark" data-square="f6" aria-label="f6" tabindex="-1"></button>
+            <button type="button" id="sq-g6" class="square" data-square="g6" aria-label="g6" tabindex="-1"></button>
+            <button type="button" id="sq-h6" class="square dark" data-square="h6" aria-label="h6" tabindex="-1"></button>
+            <button type="button" id="sq-a5" class="square dark" data-square="a5" aria-label="a5" tabindex="-1"></button>
+            <button type="button" id="sq-b5" class="square" data-square="b5" aria-label="b5" tabindex="-1"></button>
+            <button type="button" id="sq-c5" class="square dark" data-square="c5" aria-label="c5" tabindex="-1"></button>
+            <button type="button" id="sq-d5" class="square" data-square="d5" aria-label="d5" tabindex="-1"></button>
+            <button type="button" id="sq-e5" class="square dark" data-square="e5" aria-label="e5" tabindex="-1"></button>
+            <button type="button" id="sq-f5" class="square" data-square="f5" aria-label="f5" tabindex="-1"></button>
+            <button type="button" id="sq-g5" class="square dark" data-square="g5" aria-label="g5" tabindex="-1"></button>
+            <button type="button" id="sq-h5" class="square" data-square="h5" aria-label="h5" tabindex="-1"></button>
+            <button type="button" id="sq-a4" class="square" data-square="a4" aria-label="a4" tabindex="-1"></button>
+            <button type="button" id="sq-b4" class="square dark" data-square="b4" aria-label="b4" tabindex="-1"></button>
+            <button type="button" id="sq-c4" class="square" data-square="c4" aria-label="c4" tabindex="-1"></button>
+            <button type="button" id="sq-d4" class="square dark" data-square="d4" aria-label="d4" tabindex="-1"></button>
+            <button type="button" id="sq-e4" class="square" data-square="e4" aria-label="e4" tabindex="-1"></button>
+            <button type="button" id="sq-f4" class="square dark" data-square="f4" aria-label="f4" tabindex="-1"></button>
+            <button type="button" id="sq-g4" class="square" data-square="g4" aria-label="g4" tabindex="-1"></button>
+            <button type="button" id="sq-h4" class="square dark" data-square="h4" aria-label="h4" tabindex="-1"></button>
+            <button type="button" id="sq-a3" class="square dark" data-square="a3" aria-label="a3" tabindex="-1"></button>
+            <button type="button" id="sq-b3" class="square" data-square="b3" aria-label="b3" tabindex="-1"></button>
+            <button type="button" id="sq-c3" class="square dark" data-square="c3" aria-label="c3" tabindex="-1"></button>
+            <button type="button" id="sq-d3" class="square" data-square="d3" aria-label="d3" tabindex="-1"></button>
+            <button type="button" id="sq-e3" class="square dark" data-square="e3" aria-label="e3" tabindex="-1"></button>
+            <button type="button" id="sq-f3" class="square" data-square="f3" aria-label="f3" tabindex="-1"></button>
+            <button type="button" id="sq-g3" class="square dark" data-square="g3" aria-label="g3" tabindex="-1"></button>
+            <button type="button" id="sq-h3" class="square" data-square="h3" aria-label="h3" tabindex="-1"></button>
+            <button type="button" id="sq-a2" class="square" data-square="a2" aria-label="a2" tabindex="-1"></button>
+            <button type="button" id="sq-b2" class="square dark" data-square="b2" aria-label="b2" tabindex="-1"></button>
+            <button type="button" id="sq-c2" class="square" data-square="c2" aria-label="c2" tabindex="-1"></button>
+            <button type="button" id="sq-d2" class="square dark" data-square="d2" aria-label="d2" tabindex="-1"></button>
+            <button type="button" id="sq-e2" class="square" data-square="e2" aria-label="e2" tabindex="-1"></button>
+            <button type="button" id="sq-f2" class="square dark" data-square="f2" aria-label="f2" tabindex="-1"></button>
+            <button type="button" id="sq-g2" class="square" data-square="g2" aria-label="g2" tabindex="-1"></button>
+            <button type="button" id="sq-h2" class="square dark" data-square="h2" aria-label="h2" tabindex="-1"></button>
+            <button type="button" id="sq-a1" class="square dark" data-square="a1" aria-label="a1" tabindex="-1"></button>
+            <button type="button" id="sq-b1" class="square" data-square="b1" aria-label="b1" tabindex="-1"></button>
+            <button type="button" id="sq-c1" class="square dark" data-square="c1" aria-label="c1" tabindex="-1"></button>
+            <button type="button" id="sq-d1" class="square" data-square="d1" aria-label="d1" tabindex="-1"></button>
+            <button type="button" id="sq-e1" class="square dark" data-square="e1" aria-label="e1" tabindex="-1"></button>
+            <button type="button" id="sq-f1" class="square" data-square="f1" aria-label="f1" tabindex="-1"></button>
+            <button type="button" id="sq-g1" class="square dark" data-square="g1" aria-label="g1" tabindex="-1"></button>
+            <button type="button" id="sq-h1" class="square" data-square="h1" aria-label="h1" tabindex="-1"></button>
+          </div>
+          <div class="coordinates file-coordinates" aria-hidden="true">
+            <span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span><span>g</span><span>h</span>
+          </div>
+          </div>
+          <p id="boardStatus" class="board-status" role="status" aria-live="polite">Tap a piece, then a highlighted square.</p>
+          <div id="promotionPanel" class="promotion-panel" role="group" aria-labelledby="promotionTitle" hidden>
+            <p id="promotionTitle">Choose a promotion piece</p>
+            <div class="promotion-options">
+              <button type="button" id="promote-q" aria-label="Promote to queen">Queen</button>
+              <button type="button" id="promote-r" aria-label="Promote to rook">Rook</button>
+              <button type="button" id="promote-b" aria-label="Promote to bishop">Bishop</button>
+              <button type="button" id="promote-n" aria-label="Promote to knight">Knight</button>
+            </div>
+            <button type="button" class="action" id="cancelPromotion">Cancel</button>
+          </div>
+          <p id="error" role="alert"></p>
+          <div class="row game-actions">
+            <button type="button" class="action" id="undo">Undo</button>
+            <button type="button" class="action" id="draw">Draw</button>
+            <button type="button" class="action" id="resign">Resign</button>
+            <button type="button" class="action danger" id="reset">Reset</button>
+          </div>
+        </div>
+      </section>
+      <aside class="sidebar">
+        <section class="card game-info">
+          <div class="section-head"><h2>Game details</h2></div>
+          <div class="grid2">
+            <div><label for="white">White</label><input type="text" id="white" placeholder="Player name"></div>
+            <div><label for="black">Black</label><input type="text" id="black" placeholder="Player name"></div>
+            <div><label for="event">Event</label><input type="text" id="event"></div>
+            <div><label for="site">Site</label><input type="text" id="site"></div>
+            <div><label for="round">Round</label><input type="text" id="round"></div>
+            <div><label for="date">Date</label><input type="date" id="date"></div>
+            <div><label for="timeControl">Time control</label><input type="text" id="timeControl" placeholder="e.g. 90+30"></div>
+            <div><label for="result">Result</label><select id="result">
+              <option value="*" selected>*</option>
+              <option value="1-0">1-0</option>
+              <option value="0-1">0-1</option>
+              <option value="1/2-1/2">1/2-1/2</option>
+            </select></div>
+          </div>
+        </section>
+        <section class="card moves-card">
+          <div class="section-head"><h2>Moves</h2><span id="moveCount" class="section-note">0 moves</span></div>
+          <div class="moves-heading" aria-hidden="true"><span>#</span><span>White</span><span>Black</span></div>
+          <div id="moves" aria-label="Move list">No moves yet</div>
+        </section>
+      </aside>
     </div>
-
-    <div class="card">
-      <h2>Piece</h2>
-      <div class="pad pieces">
-        <button data-v="">P</button>
-        <button data-v="N">N</button>
-        <button data-v="B">B</button>
-        <button data-v="R">R</button>
-        <button data-v="Q">Q</button>
-        <button data-v="K">K</button>
+    <section class="card pgn-card">
+      <div class="section-head">
+        <h2><label for="pgnOut">PGN</label></h2>
+        <div class="row">
+          <button type="button" class="action" id="copyPgn">Copy PGN</button>
+          <button type="button" class="action primary" id="exportPgn">Download PGN</button>
+        </div>
       </div>
-      <h2>File</h2>
-      <div class="pad files">
-        <button data-v="a">a</button><button data-v="b">b</button>
-        <button data-v="c">c</button><button data-v="d">d</button>
-        <button data-v="e">e</button><button data-v="f">f</button>
-        <button data-v="g">g</button><button data-v="h">h</button>
-      </div>
-      <h2>Rank</h2>
-      <div class="pad ranks">
-        <button data-v="1">1</button><button data-v="2">2</button>
-        <button data-v="3">3</button><button data-v="4">4</button>
-        <button data-v="5">5</button><button data-v="6">6</button>
-        <button data-v="7">7</button><button data-v="8">8</button>
-      </div>
-      <h2>Special</h2>
-      <div class="pad special">
-        <button data-v="x">x</button>
-        <button data-v="=">=</button>
-        <button data-v="+">+</button>
-        <button data-v="#">#</button>
-        <button data-v=" e.p.">e.p.</button>
-        <button data-v="O-O">O-O</button>
-        <button data-v="O-O-O">O-O-O</button>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2>Moves</h2>
-      <div id="moves">No moves yet</div>
-    </div>
-
-    <div class="row">
-      <button class="action" id="resign">Resign</button>
-      <button class="action" id="draw">Draw</button>
-      <button class="action" id="undo">Undo</button>
-      <button class="action danger" id="reset">Reset</button>
-    </div>
-    <div class="row">
-      <button class="action primary" id="exportPgn">Download PGN</button>
-      <button class="action" id="copyPgn">Copy PGN</button>
-    </div>
-
-    <div class="card">
-      <h2>PGN</h2>
-      <textarea id="pgnOut" readonly></textarea>
-    </div>
-    <div class="foot">exd6 · e8=Q · Qh5+ · O-O · buttons only · legal moves enforced</div>
-  </div>
+      <textarea id="pgnOut" readonly spellcheck="false"></textarea>
+    </section>
+    <footer class="foot"><span>Works offline &middot; Saved in this browser</span><span>Pieces by Colin M. L. Burnett &middot; GPL</span></footer>
+  </main>
 
   <script>
 
@@ -296,84 +308,181 @@
 var Chess=function(r){var u="b",s="w",l=-1,_="p",A="n",S="b",m="r",y="q",p="k",t="pnbrqkPNBRQK",e="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",g=["1-0","0-1","1/2-1/2","*"],C={b:[16,32,17,15],w:[-16,-32,-17,-15]},T={n:[-18,-33,-31,-14,18,33,31,14],b:[-17,-15,17,15],r:[-16,1,16,-1],q:[-17,-16,-15,1,17,16,15,-1],k:[-17,-16,-15,1,17,16,15,-1]},c=[20,0,0,0,0,0,0,24,0,0,0,0,0,0,20,0,0,20,0,0,0,0,0,24,0,0,0,0,0,20,0,0,0,0,20,0,0,0,0,24,0,0,0,0,20,0,0,0,0,0,0,20,0,0,0,24,0,0,0,20,0,0,0,0,0,0,0,0,20,0,0,24,0,0,20,0,0,0,0,0,0,0,0,0,0,20,2,24,2,20,0,0,0,0,0,0,0,0,0,0,0,2,53,56,53,2,0,0,0,0,0,0,24,24,24,24,24,24,56,0,56,24,24,24,24,24,24,0,0,0,0,0,0,2,53,56,53,2,0,0,0,0,0,0,0,0,0,0,0,20,2,24,2,20,0,0,0,0,0,0,0,0,0,0,20,0,0,24,0,0,20,0,0,0,0,0,0,0,0,20,0,0,0,24,0,0,0,20,0,0,0,0,0,0,20,0,0,0,0,24,0,0,0,0,20,0,0,0,0,20,0,0,0,0,0,24,0,0,0,0,0,20,0,0,20,0,0,0,0,0,0,24,0,0,0,0,0,0,20],v=[17,0,0,0,0,0,0,16,0,0,0,0,0,0,15,0,0,17,0,0,0,0,0,16,0,0,0,0,0,15,0,0,0,0,17,0,0,0,0,16,0,0,0,0,15,0,0,0,0,0,0,17,0,0,0,16,0,0,0,15,0,0,0,0,0,0,0,0,17,0,0,16,0,0,15,0,0,0,0,0,0,0,0,0,0,17,0,16,0,15,0,0,0,0,0,0,0,0,0,0,0,0,17,16,15,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,-1,-1,-1,-1,-1,-1,-1,0,0,0,0,0,0,0,-15,-16,-17,0,0,0,0,0,0,0,0,0,0,0,0,-15,0,-16,0,-17,0,0,0,0,0,0,0,0,0,0,-15,0,0,-16,0,0,-17,0,0,0,0,0,0,0,0,-15,0,0,0,-16,0,0,0,-17,0,0,0,0,0,0,-15,0,0,0,0,-16,0,0,0,0,-17,0,0,0,0,-15,0,0,0,0,0,-16,0,0,0,0,0,-17,0,0,-15,0,0,0,0,0,0,-16,0,0,0,0,0,0,-17],h={p:0,n:1,b:2,r:3,q:4,k:5},o={NORMAL:"n",CAPTURE:"c",BIG_PAWN:"b",EP_CAPTURE:"e",PROMOTION:"p",KSIDE_CASTLE:"k",QSIDE_CASTLE:"q"},I={NORMAL:1,CAPTURE:2,BIG_PAWN:4,EP_CAPTURE:8,PROMOTION:16,KSIDE_CASTLE:32,QSIDE_CASTLE:64},P=7,w=6,L=1,R=0,N={a8:0,b8:1,c8:2,d8:3,e8:4,f8:5,g8:6,h8:7,a7:16,b7:17,c7:18,d7:19,e7:20,f7:21,g7:22,h7:23,a6:32,b6:33,c6:34,d6:35,e6:36,f6:37,g6:38,h6:39,a5:48,b5:49,c5:50,d5:51,e5:52,f5:53,g5:54,h5:55,a4:64,b4:65,c4:66,d4:67,e4:68,f4:69,g4:70,h4:71,a3:80,b3:81,c3:82,d3:83,e3:84,f3:85,g3:86,h3:87,a2:96,b2:97,c2:98,d2:99,e2:100,f2:101,g2:102,h2:103,a1:112,b1:113,c1:114,d1:115,e1:116,f1:117,g1:118,h1:119},E={w:[{square:N.a1,flag:I.QSIDE_CASTLE},{square:N.h1,flag:I.KSIDE_CASTLE}],b:[{square:N.a8,flag:I.QSIDE_CASTLE},{square:N.h8,flag:I.KSIDE_CASTLE}]},O=new Array(128),k={w:l,b:l},q=s,D={w:0,b:0},K=l,d=0,b=1,Q=[],U={};function x(r){void 0===r&&(r=!1),O=new Array(128),k={w:l,b:l},q=s,D={w:0,b:0},K=l,d=0,b=1,Q=[],r||(U={}),F(M())}function j(){B(e)}function B(r,e){void 0===e&&(e=!1);var n=r.split(/\s+/),t=n[0],o=0;if(!$(r).valid)return!1;x(e);for(var i=0;i<t.length;i++){var f=t.charAt(i);if("/"===f)o+=8;else if(-1!=="0123456789".indexOf(f))o+=parseInt(f,10);else{var a=f<"a"?s:u;W({type:f.toLowerCase(),color:a},fr(o)),o++}}return q=n[1],-1<n[2].indexOf("K")&&(D.w|=I.KSIDE_CASTLE),-1<n[2].indexOf("Q")&&(D.w|=I.QSIDE_CASTLE),-1<n[2].indexOf("k")&&(D.b|=I.KSIDE_CASTLE),-1<n[2].indexOf("q")&&(D.b|=I.QSIDE_CASTLE),K="-"===n[3]?l:N[n[3]],d=parseInt(n[4],10),b=parseInt(n[5],10),F(M()),!0}function $(r){var e="No errors.",n="FEN string must contain six space-delimited fields.",t="6th field (move number) must be a positive integer.",o="5th field (half move counter) must be a non-negative integer.",i="4th field (en-passant square) is invalid.",f="3rd field (castling availability) is invalid.",a="2nd field (side to move) is invalid.",l="1st field (piece positions) does not contain 8 '/'-delimited rows.",u="1st field (piece positions) is invalid [consecutive numbers].",s="1st field (piece positions) is invalid [invalid piece].",p="1st field (piece positions) is invalid [row too large].",c="Illegal en-passant square",v=r.split(/\s+/);if(6!==v.length)return{valid:!1,error_number:1,error:n};if(isNaN(v[5])||parseInt(v[5],10)<=0)return{valid:!1,error_number:2,error:t};if(isNaN(v[4])||parseInt(v[4],10)<0)return{valid:!1,error_number:3,error:o};if(!/^(-|[abcdefgh][36])$/.test(v[3]))return{valid:!1,error_number:4,error:i};if(!/^(KQ?k?q?|Qk?q?|kq?|q|-)$/.test(v[2]))return{valid:!1,error_number:5,error:f};if(!/^(w|b)$/.test(v[1]))return{valid:!1,error_number:6,error:a};var g=v[0].split("/");if(8!==g.length)return{valid:!1,error_number:7,error:l};for(var h=0;h<g.length;h++){for(var E=0,d=!1,b=0;b<g[h].length;b++)if(isNaN(g[h][b])){if(!/^[prnbqkPRNBQK]$/.test(g[h][b]))return{valid:!1,error_number:9,error:s};E+=1,d=!1}else{if(d)return{valid:!1,error_number:8,error:u};E+=parseInt(g[h][b],10),d=!0}if(8!==E)return{valid:!1,error_number:10,error:p}}return"3"==v[3][1]&&"w"==v[1]||"6"==v[3][1]&&"b"==v[1]?{valid:!1,error_number:11,error:c}:{valid:!0,error_number:0,error:e}}function M(){for(var r=0,e="",n=N.a8;n<=N.h1;n++){if(null==O[n])r++;else{0<r&&(e+=r,r=0);var t=O[n].color,o=O[n].type;e+=t===s?o.toUpperCase():o.toLowerCase()}n+1&136&&(0<r&&(e+=r),n!==N.h1&&(e+="/"),r=0,n+=8)}var i="";D[s]&I.KSIDE_CASTLE&&(i+="K"),D[s]&I.QSIDE_CASTLE&&(i+="Q"),D[u]&I.KSIDE_CASTLE&&(i+="k"),D[u]&I.QSIDE_CASTLE&&(i+="q"),i=i||"-";var f=K===l?"-":fr(K);return[e,q,i,f,d,b].join(" ")}function G(r){for(var e=0;e<r.length;e+=2)"string"==typeof r[e]&&"string"==typeof r[e+1]&&(U[r[e]]=r[e+1]);return U}function F(r){0<Q.length||(r!==e?(U.SetUp="1",U.FEN=r):(delete U.SetUp,delete U.FEN))}function i(r){var e=O[N[r]];return e?{type:e.type,color:e.color}:null}function W(r,e){if(!("type"in r&&"color"in r))return!1;if(-1===t.indexOf(r.type.toLowerCase()))return!1;if(!(e in N))return!1;var n=N[e];return(r.type!=p||k[r.color]==l||k[r.color]==n)&&(O[n]={type:r.type,color:r.color},r.type===p&&(k[r.color]=n),F(M()),!0)}function H(r,e,n,t,o){var i={color:q,from:e,to:n,flags:t,piece:r[e].type};return o&&(i.flags|=I.PROMOTION,i.promotion=o),r[n]?i.captured=r[n].type:t&I.EP_CAPTURE&&(i.captured=_),i}function Z(r){function e(r,e,n,t,o){if(r[n].type!==_||or(t)!==R&&or(t)!==P)e.push(H(r,n,t,o));else for(var i=[y,m,S,A],f=0,a=i.length;f<a;f++)e.push(H(r,n,t,o,i[f]))}var n=[],t=q,o=ar(t),i={b:L,w:w},f=N.a8,a=N.h1,l=!1,u=!(void 0!==r&&"legal"in r)||r.legal;if(void 0!==r&&"square"in r){if(!(r.square in N))return[];f=a=N[r.square],l=!0}for(var s=f;s<=a;s++)if(136&s)s+=7;else{var p=O[s];if(null!=p&&p.color===t)if(p.type===_){var c=s+C[t][0];if(null==O[c]){e(O,n,s,c,I.NORMAL);c=s+C[t][1];i[t]===or(s)&&null==O[c]&&e(O,n,s,c,I.BIG_PAWN)}for(v=2;v<4;v++){136&(c=s+C[t][v])||(null!=O[c]&&O[c].color===o?e(O,n,s,c,I.CAPTURE):c===K&&e(O,n,s,K,I.EP_CAPTURE))}}else for(var v=0,g=T[p.type].length;v<g;v++){var h=T[p.type][v];for(c=s;!(136&(c+=h));){if(null!=O[c]){if(O[c].color===t)break;e(O,n,s,c,I.CAPTURE);break}if(e(O,n,s,c,I.NORMAL),"n"===p.type||"k"===p.type)break}}}if(!l||a===k[t]){if(D[t]&I.KSIDE_CASTLE){var E=(d=k[t])+2;null!=O[d+1]||null!=O[E]||V(o,k[t])||V(o,d+1)||V(o,E)||e(O,n,k[t],E,I.KSIDE_CASTLE)}if(D[t]&I.QSIDE_CASTLE){var d;E=(d=k[t])-2;null!=O[d-1]||null!=O[d-2]||null!=O[d-3]||V(o,k[t])||V(o,d-1)||V(o,E)||e(O,n,k[t],E,I.QSIDE_CASTLE)}}if(!u)return n;var b=[];for(s=0,g=n.length;s<g;s++)er(n[s]),X(t)||b.push(n[s]),nr();return b}function z(r,e){var n="";if(r.flags&I.KSIDE_CASTLE)n="O-O";else if(r.flags&I.QSIDE_CASTLE)n="O-O-O";else{var t=function(r,e){for(var n=Z({legal:!e}),t=r.from,o=r.to,i=r.piece,f=0,a=0,l=0,u=0,s=n.length;u<s;u++){var p=n[u].from,c=n[u].to,v=n[u].piece;i===v&&t!==p&&o===c&&(f++,or(t)===or(p)&&a++,ir(t)===ir(p)&&l++)}if(0<f)return 0<a&&0<l?fr(t):0<l?fr(t).charAt(1):fr(t).charAt(0);return""}(r,e);r.piece!==_&&(n+=r.piece.toUpperCase()+t),r.flags&(I.CAPTURE|I.EP_CAPTURE)&&(r.piece===_&&(n+=fr(r.from)[0]),n+="x"),n+=fr(r.to),r.flags&I.PROMOTION&&(n+="="+r.promotion.toUpperCase())}return er(r),f()&&(a()?n+="#":n+="+"),nr(),n}function J(r){return r.replace(/=/,"").replace(/[+#]?[?!]*$/,"")}function V(r,e){for(var n=N.a8;n<=N.h1;n++)if(136&n)n+=7;else if(null!=O[n]&&O[n].color===r){var t=O[n],o=n-e,i=119+o;if(c[i]&1<<h[t.type]){if(t.type===_){if(0<o){if(t.color===s)return!0}else if(t.color===u)return!0;continue}if("n"===t.type||"k"===t.type)return!0;for(var f=v[i],a=n+f,l=!1;a!==e;){if(null!=O[a]){l=!0;break}a+=f}if(!l)return!0}}return!1}function X(r){return V(ar(r),k[r])}function f(){return X(q)}function a(){return f()&&0===Z().length}function n(){return!f()&&0===Z().length}function Y(){for(var r={},e=[],n=0,t=0,o=N.a8;o<=N.h1;o++)if(t=(t+1)%2,136&o)o+=7;else{var i=O[o];i&&(r[i.type]=i.type in r?r[i.type]+1:1,i.type===S&&e.push(t),n++)}if(2===n)return!0;if(3===n&&(1===r[S]||1===r[A]))return!0;if(n===r[S]+2){var f=0,a=e.length;for(o=0;o<a;o++)f+=e[o];if(0===f||f===a)return!0}return!1}function rr(){for(var r=[],e={},n=!1;;){var t=nr();if(!t)break;r.push(t)}for(;;){var o=M().split(" ").slice(0,4).join(" ");if(e[o]=o in e?e[o]+1:1,3<=e[o]&&(n=!0),!r.length)break;er(r.pop())}return n}function er(r){var e,n=q,t=ar(n);if(e=r,Q.push({move:e,kings:{b:k.b,w:k.w},turn:q,castling:{b:D.b,w:D.w},ep_square:K,half_moves:d,move_number:b}),O[r.to]=O[r.from],O[r.from]=null,r.flags&I.EP_CAPTURE&&(q===u?O[r.to-16]=null:O[r.to+16]=null),r.flags&I.PROMOTION&&(O[r.to]={type:r.promotion,color:n}),O[r.to].type===p){if(k[O[r.to].color]=r.to,r.flags&I.KSIDE_CASTLE){var o=r.to-1,i=r.to+1;O[o]=O[i],O[i]=null}else if(r.flags&I.QSIDE_CASTLE){o=r.to+1,i=r.to-2;O[o]=O[i],O[i]=null}D[n]=""}if(D[n])for(var f=0,a=E[n].length;f<a;f++)if(r.from===E[n][f].square&&D[n]&E[n][f].flag){D[n]^=E[n][f].flag;break}if(D[t])for(f=0,a=E[t].length;f<a;f++)if(r.to===E[t][f].square&&D[t]&E[t][f].flag){D[t]^=E[t][f].flag;break}K=r.flags&I.BIG_PAWN?"b"===q?r.to-16:r.to+16:l,r.piece===_||r.flags&(I.CAPTURE|I.EP_CAPTURE)?d=0:d++,q===u&&b++,q=ar(q)}function nr(){var r=Q.pop();if(null==r)return null;var e=r.move;k=r.kings,q=r.turn,D=r.castling,K=r.ep_square,d=r.half_moves,b=r.move_number;var n,t,o=q,i=ar(q);if(O[e.from]=O[e.to],O[e.from].type=e.piece,O[e.to]=null,e.flags&I.CAPTURE)O[e.to]={type:e.captured,color:i};else if(e.flags&I.EP_CAPTURE){var f;f=o===u?e.to-16:e.to+16,O[f]={type:_,color:i}}e.flags&(I.KSIDE_CASTLE|I.QSIDE_CASTLE)&&(e.flags&I.KSIDE_CASTLE?(n=e.to+1,t=e.to-1):e.flags&I.QSIDE_CASTLE&&(n=e.to-2,t=e.to+1),O[n]=O[t],O[t]=null);return e}function tr(r,e){var n=J(r);if(e){var t=n.match(/([pnbrqkPNBRQK])?([a-h][1-8])x?-?([a-h][1-8])([qrbnQRBN])?/);if(t)var o=t[1],i=t[2],f=t[3],a=t[4]}for(var l=Z(),u=0,s=l.length;u<s;u++){if(n===J(z(l[u]))||e&&n===J(z(l[u],!0)))return l[u];if(t&&(!o||o.toLowerCase()==l[u].piece)&&N[i]==l[u].from&&N[f]==l[u].to&&(!a||a.toLowerCase()==l[u].promotion))return l[u]}return null}function or(r){return r>>4}function ir(r){return 15&r}function fr(r){var e=ir(r),n=or(r);return"abcdefgh".substring(e,e+1)+"87654321".substring(n,n+1)}function ar(r){return r===s?u:s}function lr(r){var e=function r(e){var n=e instanceof Array?[]:{};for(var t in e)n[t]="object"==typeof t?r(e[t]):e[t];return n}(r);e.san=z(e,!1),e.to=fr(e.to),e.from=fr(e.from);var n="";for(var t in I)I[t]&e.flags&&(n+=o[t]);return e.flags=n,e}function ur(r){return r.replace(/^\s+|\s+$/g,"")}return B(void 0===r?e:r),{WHITE:s,BLACK:u,PAWN:_,KNIGHT:A,BISHOP:S,ROOK:m,QUEEN:y,KING:p,SQUARES:function(){for(var r=[],e=N.a8;e<=N.h1;e++)136&e?e+=7:r.push(fr(e));return r}(),FLAGS:o,load:function(r){return B(r)},reset:function(){return j()},moves:function(r){for(var e=Z(r),n=[],t=0,o=e.length;t<o;t++)void 0!==r&&"verbose"in r&&r.verbose?n.push(lr(e[t])):n.push(z(e[t],!1));return n},in_check:function(){return f()},in_checkmate:function(){return a()},in_stalemate:function(){return n()},in_draw:function(){return 100<=d||n()||Y()||rr()},insufficient_material:function(){return Y()},in_threefold_repetition:function(){return rr()},game_over:function(){return 100<=d||a()||n()||Y()||rr()},validate_fen:function(r){return $(r)},fen:function(){return M()},board:function(){for(var r=[],e=[],n=N.a8;n<=N.h1;n++)null==O[n]?e.push(null):e.push({type:O[n].type,color:O[n].color}),n+1&136&&(r.push(e),e=[],n+=8);return r},pgn:function(r){var e="object"==typeof r&&"string"==typeof r.newline_char?r.newline_char:"\n",n="object"==typeof r&&"number"==typeof r.max_width?r.max_width:0,t=[],o=!1;for(var i in U)t.push("["+i+' "'+U[i]+'"]'+e),o=!0;o&&Q.length&&t.push(e);for(var f=[];0<Q.length;)f.push(nr());for(var a=[],l="";0<f.length;){var u=f.pop();Q.length||"b"!==u.color?"w"===u.color&&(l.length&&a.push(l),l=b+"."):l=b+". ...",l=l+" "+z(u,!1),er(u)}if(l.length&&a.push(l),void 0!==U.Result&&a.push(U.Result),0===n)return t.join("")+a.join(" ");var s=0;for(i=0;i<a.length;i++)s+a[i].length>n&&0!==i?(" "===t[t.length-1]&&t.pop(),t.push(e),s=0):0!==i&&(t.push(" "),s++),t.push(a[i]),s+=a[i].length;return t.join("")},load_pgn:function(r,e){var n=void 0!==e&&"sloppy"in e&&e.sloppy;function l(r){return r.replace(/\\/g,"\\")}var t="object"==typeof e&&"string"==typeof e.newline_char?e.newline_char:"\r?\n",o=new RegExp("^(\\[((?:"+l(t)+")|.)*\\])(?:"+l(t)+"){2}"),i=o.test(r)?o.exec(r)[1]:"";j();var f=function(r,e){for(var n="object"==typeof e&&"string"==typeof e.newline_char?e.newline_char:"\r?\n",t={},o=r.split(new RegExp(l(n))),i="",f="",a=0;a<o.length;a++)i=o[a].replace(/^\[([A-Z][A-Za-z]*)\s.*\]$/,"$1"),f=o[a].replace(/^\[[A-Za-z]+\s"(.*)"\]$/,"$1"),0<ur(i).length&&(t[i]=f);return t}(i,e);for(var a in f)G([a,f[a]]);if("1"===f.SetUp&&!("FEN"in f&&B(f.FEN,!0)))return!1;var u=r.replace(i,"").replace(new RegExp(l(t),"g")," ");u=u.replace(/(\{[^}]+\})+?/g,"");for(var s=/(\([^\(\)]+\))+?/g;s.test(u);)u=u.replace(s,"");var p=ur(u=(u=(u=u.replace(/\d+\.(\.\.)?/g,"")).replace(/\.\.\./g,"")).replace(/\$\d+/g,"")).split(new RegExp(/\s+/));p=p.join(",").replace(/,,+/g,",").split(",");for(var c="",v=0;v<p.length-1;v++){if(null==(c=tr(p[v],n)))return!1;er(c)}if(c=p[p.length-1],-1<g.indexOf(c))!function(r){for(var e in r)return 1}(U)||void 0!==U.Result||G(["Result",c]);else{if(null==(c=tr(c,n)))return!1;er(c)}return!0},header:function(){return G(arguments)},ascii:function(){return function(){for(var r="   +------------------------+\n",e=N.a8;e<=N.h1;e++){if(0===ir(e)&&(r+=" "+"87654321"[or(e)]+" |"),null==O[e])r+=" . ";else{var n=O[e].type;r+=" "+(O[e].color===s?n.toUpperCase():n.toLowerCase())+" "}e+1&136&&(r+="|\n",e+=8)}return r+="   +------------------------+\n",r+="     a  b  c  d  e  f  g  h\n"}()},turn:function(){return q},move:function(r,e){var n=void 0!==e&&"sloppy"in e&&e.sloppy,t=null;if("string"==typeof r)t=tr(r,n);else if("object"==typeof r)for(var o=Z(),i=0,f=o.length;i<f;i++)if(!(r.from!==fr(o[i].from)||r.to!==fr(o[i].to)||"promotion"in o[i]&&r.promotion!==o[i].promotion)){t=o[i];break}if(!t)return null;var a=lr(t);return er(t),a},undo:function(){var r=nr();return r?lr(r):null},clear:function(){return x()},put:function(r,e){return W(r,e)},get:function(r){return i(r)},remove:function(r){return n=i(e=r),O[N[e]]=null,n&&n.type===p&&(k[n.color]=l),F(M()),n;var e,n},perft:function(r){return function r(e){for(var n=Z({legal:!1}),t=0,o=q,i=0,f=n.length;i<f;i++)er(n[i]),X(o)||(0<e-1?t+=r(e-1):t++),nr();return t}(r)},square_color:function(r){if(r in N){var e=N[r];return(or(e)+ir(e))%2==0?"light":"dark"}return null},history:function(r){for(var e=[],n=[],t=(void 0!==r&&"verbose"in r&&r.verbose);0<Q.length;)e.push(nr());for(;0<e.length;){var o=e.pop();t?n.push(lr(o)):n.push(z(o)),er(o)}return n}}};"undefined"!=typeof exports&&(exports.Chess=Chess),"undefined"!=typeof define&&define(function(){return Chess});
   </script>
   <script>
+    // Cburnett pieces by Colin M. L. Burnett, used under the GNU GPL.
+    // Source: python-chess 1.11.2; see THIRD_PARTY_NOTICES.md.
+    const pieceArtwork = {"wK":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 45 45\"><g id=\"white-king\" class=\"white king\" fill=\"none\" fill-rule=\"evenodd\" stroke=\"#000\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M22.5 11.63V6M20 8h5\" stroke-linejoin=\"miter\"/><path d=\"M22.5 25s4.5-7.5 3-10.5c0 0-1-2.5-3-2.5s-3 2.5-3 2.5c-1.5 3 3 10.5 3 10.5\" fill=\"#fff\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\"/><path d=\"M11.5 37c5.5 3.5 15.5 3.5 21 0v-7s9-4.5 6-10.5c-4-6.5-13.5-3.5-16 4V27v-3.5c-3.5-7.5-13-10.5-16-4-3 6 5 10 5 10V37z\" fill=\"#fff\"/><path d=\"M11.5 30c5.5-3 15.5-3 21 0m-21 3.5c5.5-3 15.5-3 21 0m-21 3.5c5.5-3 15.5-3 21 0\"/></g></svg>","wQ":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 45 45\"><g id=\"white-queen\" class=\"white queen\" fill=\"#fff\" fill-rule=\"evenodd\" stroke=\"#000\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M8 12a2 2 0 1 1-4 0 2 2 0 1 1 4 0zM24.5 7.5a2 2 0 1 1-4 0 2 2 0 1 1 4 0zM41 12a2 2 0 1 1-4 0 2 2 0 1 1 4 0zM16 8.5a2 2 0 1 1-4 0 2 2 0 1 1 4 0zM33 9a2 2 0 1 1-4 0 2 2 0 1 1 4 0z\"/><path d=\"M9 26c8.5-1.5 21-1.5 27 0l2-12-7 11V11l-5.5 13.5-3-15-3 15-5.5-14V25L7 14l2 12zM9 26c0 2 1.5 2 2.5 4 1 1.5 1 1 .5 3.5-1.5 1-1.5 2.5-1.5 2.5-1.5 1.5.5 2.5.5 2.5 6.5 1 16.5 1 23 0 0 0 1.5-1 0-2.5 0 0 .5-1.5-1-2.5-.5-2.5-.5-2 .5-3.5 1-2 2.5-2 2.5-4-8.5-1.5-18.5-1.5-27 0z\" stroke-linecap=\"butt\"/><path d=\"M11.5 30c3.5-1 18.5-1 22 0M12 33.5c6-1 15-1 21 0\" fill=\"none\"/></g></svg>","wR":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 45 45\"><g id=\"white-rook\" class=\"white rook\" fill=\"#fff\" fill-rule=\"evenodd\" stroke=\"#000\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M9 39h27v-3H9v3zM12 36v-4h21v4H12zM11 14V9h4v2h5V9h5v2h5V9h4v5\" stroke-linecap=\"butt\"/><path d=\"M34 14l-3 3H14l-3-3\"/><path d=\"M31 17v12.5H14V17\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\"/><path d=\"M31 29.5l1.5 2.5h-20l1.5-2.5\"/><path d=\"M11 14h23\" fill=\"none\" stroke-linejoin=\"miter\"/></g></svg>","wB":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 45 45\"><g id=\"white-bishop\" class=\"white bishop\" fill=\"none\" fill-rule=\"evenodd\" stroke=\"#000\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><g fill=\"#fff\" stroke-linecap=\"butt\"><path d=\"M9 36c3.39-.97 10.11.43 13.5-2 3.39 2.43 10.11 1.03 13.5 2 0 0 1.65.54 3 2-.68.97-1.65.99-3 .5-3.39-.97-10.11.46-13.5-1-3.39 1.46-10.11.03-13.5 1-1.354.49-2.323.47-3-.5 1.354-1.94 3-2 3-2zM15 32c2.5 2.5 12.5 2.5 15 0 .5-1.5 0-2 0-2 0-2.5-2.5-4-2.5-4 5.5-1.5 6-11.5-5-15.5-11 4-10.5 14-5 15.5 0 0-2.5 1.5-2.5 4 0 0-.5.5 0 2zM25 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 1 1 5 0z\"/></g><path d=\"M17.5 26h10M15 30h15m-7.5-14.5v5M20 18h5\" stroke-linejoin=\"miter\"/></g></svg>","wN":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 45 45\"><g id=\"white-knight\" class=\"white knight\" fill=\"none\" fill-rule=\"evenodd\" stroke=\"#000\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M 22,10 C 32.5,11 38.5,18 38,39 L 15,39 C 15,30 25,32.5 23,18\" style=\"fill:#ffffff; stroke:#000000;\"/><path d=\"M 24,18 C 24.38,20.91 18.45,25.37 16,27 C 13,29 13.18,31.34 11,31 C 9.958,30.06 12.41,27.96 11,28 C 10,28 11.19,29.23 10,30 C 9,30 5.997,31 6,26 C 6,24 12,14 12,14 C 12,14 13.89,12.1 14,10.5 C 13.27,9.506 13.5,8.5 13.5,7.5 C 14.5,6.5 16.5,10 16.5,10 L 18.5,10 C 18.5,10 19.28,8.008 21,7 C 22,7 22,10 22,10\" style=\"fill:#ffffff; stroke:#000000;\"/><path d=\"M 9.5 25.5 A 0.5 0.5 0 1 1 8.5,25.5 A 0.5 0.5 0 1 1 9.5 25.5 z\" style=\"fill:#000000; stroke:#000000;\"/><path d=\"M 15 15.5 A 0.5 1.5 0 1 1 14,15.5 A 0.5 1.5 0 1 1 15 15.5 z\" transform=\"matrix(0.866,0.5,-0.5,0.866,9.693,-5.173)\" style=\"fill:#000000; stroke:#000000;\"/></g></svg>","wP":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 45 45\"><g id=\"white-pawn\" class=\"white pawn\"><path d=\"M22.5 9c-2.21 0-4 1.79-4 4 0 .89.29 1.71.78 2.38C17.33 16.5 16 18.59 16 21c0 2.03.94 3.84 2.41 5.03-3 1.06-7.41 5.55-7.41 13.47h23c0-7.92-4.41-12.41-7.41-13.47 1.47-1.19 2.41-3 2.41-5.03 0-2.41-1.33-4.5-3.28-5.62.49-.67.78-1.49.78-2.38 0-2.21-1.79-4-4-4z\" fill=\"#fff\" stroke=\"#000\" stroke-width=\"1.5\" stroke-linecap=\"round\"/></g></svg>","bK":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 45 45\"><g id=\"black-king\" class=\"black king\" fill=\"none\" fill-rule=\"evenodd\" stroke=\"#000\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M22.5 11.63V6\" stroke-linejoin=\"miter\"/><path d=\"M22.5 25s4.5-7.5 3-10.5c0 0-1-2.5-3-2.5s-3 2.5-3 2.5c-1.5 3 3 10.5 3 10.5\" fill=\"#000\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\"/><path d=\"M11.5 37c5.5 3.5 15.5 3.5 21 0v-7s9-4.5 6-10.5c-4-6.5-13.5-3.5-16 4V27v-3.5c-3.5-7.5-13-10.5-16-4-3 6 5 10 5 10V37z\" fill=\"#000\"/><path d=\"M20 8h5\" stroke-linejoin=\"miter\"/><path d=\"M32 29.5s8.5-4 6.03-9.65C34.15 14 25 18 22.5 24.5l.01 2.1-.01-2.1C20 18 9.906 14 6.997 19.85c-2.497 5.65 4.853 9 4.853 9M11.5 30c5.5-3 15.5-3 21 0m-21 3.5c5.5-3 15.5-3 21 0m-21 3.5c5.5-3 15.5-3 21 0\" stroke=\"#fff\"/></g></svg>","bQ":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 45 45\"><g id=\"black-queen\" class=\"black queen\" fill=\"#000\" fill-rule=\"evenodd\" stroke=\"#000\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><g fill=\"#000\" stroke=\"none\"><circle cx=\"6\" cy=\"12\" r=\"2.75\"/><circle cx=\"14\" cy=\"9\" r=\"2.75\"/><circle cx=\"22.5\" cy=\"8\" r=\"2.75\"/><circle cx=\"31\" cy=\"9\" r=\"2.75\"/><circle cx=\"39\" cy=\"12\" r=\"2.75\"/></g><path d=\"M9 26c8.5-1.5 21-1.5 27 0l2.5-12.5L31 25l-.3-14.1-5.2 13.6-3-14.5-3 14.5-5.2-13.6L14 25 6.5 13.5 9 26zM9 26c0 2 1.5 2 2.5 4 1 1.5 1 1 .5 3.5-1.5 1-1.5 2.5-1.5 2.5-1.5 1.5.5 2.5.5 2.5 6.5 1 16.5 1 23 0 0 0 1.5-1 0-2.5 0 0 .5-1.5-1-2.5-.5-2.5-.5-2 .5-3.5 1-2 2.5-2 2.5-4-8.5-1.5-18.5-1.5-27 0z\" stroke-linecap=\"butt\"/><path d=\"M11 38.5a35 35 1 0 0 23 0\" fill=\"none\" stroke-linecap=\"butt\"/><path d=\"M11 29a35 35 1 0 1 23 0M12.5 31.5h20M11.5 34.5a35 35 1 0 0 22 0M10.5 37.5a35 35 1 0 0 24 0\" fill=\"none\" stroke=\"#fff\"/></g></svg>","bR":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 45 45\"><g id=\"black-rook\" class=\"black rook\" fill=\"#000\" fill-rule=\"evenodd\" stroke=\"#000\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M9 39h27v-3H9v3zM12.5 32l1.5-2.5h17l1.5 2.5h-20zM12 36v-4h21v4H12z\" stroke-linecap=\"butt\"/><path d=\"M14 29.5v-13h17v13H14z\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\"/><path d=\"M14 16.5L11 14h23l-3 2.5H14zM11 14V9h4v2h5V9h5v2h5V9h4v5H11z\" stroke-linecap=\"butt\"/><path d=\"M12 35.5h21M13 31.5h19M14 29.5h17M14 16.5h17M11 14h23\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1\" stroke-linejoin=\"miter\"/></g></svg>","bB":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 45 45\"><g id=\"black-bishop\" class=\"black bishop\" fill=\"none\" fill-rule=\"evenodd\" stroke=\"#000\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M9 36c3.39-.97 10.11.43 13.5-2 3.39 2.43 10.11 1.03 13.5 2 0 0 1.65.54 3 2-.68.97-1.65.99-3 .5-3.39-.97-10.11.46-13.5-1-3.39 1.46-10.11.03-13.5 1-1.354.49-2.323.47-3-.5 1.354-1.94 3-2 3-2zm6-4c2.5 2.5 12.5 2.5 15 0 .5-1.5 0-2 0-2 0-2.5-2.5-4-2.5-4 5.5-1.5 6-11.5-5-15.5-11 4-10.5 14-5 15.5 0 0-2.5 1.5-2.5 4 0 0-.5.5 0 2zM25 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 1 1 5 0z\" fill=\"#000\" stroke-linecap=\"butt\"/><path d=\"M17.5 26h10M15 30h15m-7.5-14.5v5M20 18h5\" stroke=\"#fff\" stroke-linejoin=\"miter\"/></g></svg>","bN":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 45 45\"><g id=\"black-knight\" class=\"black knight\" fill=\"none\" fill-rule=\"evenodd\" stroke=\"#000\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M 22,10 C 32.5,11 38.5,18 38,39 L 15,39 C 15,30 25,32.5 23,18\" style=\"fill:#000000; stroke:#000000;\"/><path d=\"M 24,18 C 24.38,20.91 18.45,25.37 16,27 C 13,29 13.18,31.34 11,31 C 9.958,30.06 12.41,27.96 11,28 C 10,28 11.19,29.23 10,30 C 9,30 5.997,31 6,26 C 6,24 12,14 12,14 C 12,14 13.89,12.1 14,10.5 C 13.27,9.506 13.5,8.5 13.5,7.5 C 14.5,6.5 16.5,10 16.5,10 L 18.5,10 C 18.5,10 19.28,8.008 21,7 C 22,7 22,10 22,10\" style=\"fill:#000000; stroke:#000000;\"/><path d=\"M 9.5 25.5 A 0.5 0.5 0 1 1 8.5,25.5 A 0.5 0.5 0 1 1 9.5 25.5 z\" style=\"fill:#ececec; stroke:#ececec;\"/><path d=\"M 15 15.5 A 0.5 1.5 0 1 1 14,15.5 A 0.5 1.5 0 1 1 15 15.5 z\" transform=\"matrix(0.866,0.5,-0.5,0.866,9.693,-5.173)\" style=\"fill:#ececec; stroke:#ececec;\"/><path d=\"M 24.55,10.4 L 24.1,11.85 L 24.6,12 C 27.75,13 30.25,14.49 32.5,18.75 C 34.75,23.01 35.75,29.06 35.25,39 L 35.2,39.5 L 37.45,39.5 L 37.5,39 C 38,28.94 36.62,22.15 34.25,17.66 C 31.88,13.17 28.46,11.02 25.06,10.5 L 24.55,10.4 z \" style=\"fill:#ececec; stroke:none;\"/></g></svg>","bP":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 45 45\"><g id=\"black-pawn\" class=\"black pawn\"><path d=\"M22.5 9c-2.21 0-4 1.79-4 4 0 .89.29 1.71.78 2.38C17.33 16.5 16 18.59 16 21c0 2.03.94 3.84 2.41 5.03-3 1.06-7.41 5.55-7.41 13.47h23c0-7.92-4.41-12.41-7.41-13.47 1.47-1.19 2.41-3 2.41-5.03 0-2.41-1.33-4.5-3.28-5.62.49-.67.78-1.49.78-2.38 0-2.21-1.79-4-4-4z\" fill=\"#000\" stroke=\"#000\" stroke-width=\"1.5\" stroke-linecap=\"round\"/></g></svg>"};
+
     let game = new Chess();
-    let buf = '';
+    // Retain drafts from older saves without exposing the removed notation input.
+    let legacyDraft = '';
     window._ended = false;
     let dateUserSet = false;
     let recoveryBlocked = false;
 
-    const currentEl = document.getElementById('current');
     const errorEl = document.getElementById('error');
     const movesEl = document.getElementById('moves');
     const pgnOut = document.getElementById('pgnOut');
     const recoveryWarning = document.getElementById('recoveryWarning');
 
-    const themeBtn = document.getElementById('themeBtn');
+    const lightThemeBtn = document.getElementById('lightTheme');
+    const darkThemeBtn = document.getElementById('darkTheme');
     function setTheme(t) {
+      t = t === 'dark' ? 'dark' : 'light';
       document.documentElement.setAttribute('data-theme', t);
-      themeBtn.textContent = t === 'dark' ? 'Light' : 'Dark';
+      lightThemeBtn.setAttribute('aria-pressed', String(t === 'light'));
+      darkThemeBtn.setAttribute('aria-pressed', String(t === 'dark'));
       localStorage.setItem('cn-theme', t);
     }
     setTheme(localStorage.getItem('cn-theme') || 'light');
-    themeBtn.addEventListener('click', () => {
-      setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
-    });
+    lightThemeBtn.addEventListener('click', () => setTheme('light'));
+    darkThemeBtn.addEventListener('click', () => setTheme('dark'));
 
-    const desktopKeyboard = window.matchMedia('(pointer: fine)').matches;
+    const pieceNames = { p: 'pawn', n: 'knight', b: 'bishop', r: 'rook', q: 'queen', k: 'king' };
+    const boardStatus = document.getElementById('boardStatus');
+    const promotionPanel = document.getElementById('promotionPanel');
+    const boardSquares = new Map();
+    let selectedSquare = null;
+    let pendingPromotion = null;
+    let boardFocusSquare = 'e2';
 
-    function focusMoveInput() {
-      if (desktopKeyboard) currentEl.focus();
+    function renderBoard() {
+      const moves = selectedSquare ? game.moves({ square: selectedSquare, verbose: true }) : [];
+      const history = game.history({ verbose: true });
+      const lastMove = history[history.length - 1];
+      const inCheck = game.in_check();
+      boardSquares.forEach((button, square) => {
+        const piece = game.get(square);
+        const destination = moves.find(move => move.to === square);
+        const colorName = piece && (piece.color === 'w' ? 'White' : 'Black');
+        button.classList.toggle('selected', square === selectedSquare);
+        button.classList.toggle('legal-move', !!destination && !piece);
+        button.classList.toggle('legal-capture', !!destination && !!piece);
+        button.classList.toggle('last-move', !!lastMove && (square === lastMove.from || square === lastMove.to));
+        button.classList.toggle('in-check', !!piece && piece.type === 'k' && piece.color === game.turn() && inCheck);
+        button.setAttribute('aria-pressed', String(square === selectedSquare));
+        button.setAttribute('aria-label', square + (piece ? ', ' + colorName + ' ' + pieceNames[piece.type] : ', empty') + (destination ? ', legal destination' : ''));
+        button.tabIndex = square === boardFocusSquare ? 0 : -1;
+        button.innerHTML = piece ? '<span class="piece" aria-hidden="true">' + pieceArtwork[piece.color + piece.type.toUpperCase()] + '</span>' : '';
+      });
+      const turnName = game.turn() === 'w' ? 'White' : 'Black';
+      const finished = window._ended || game.game_over();
+      const turnLabel = document.getElementById('turnLabel');
+      turnLabel.textContent = finished ? 'Game finished' : turnName + ' to move' + (inCheck ? ' · Check' : '');
+      turnLabel.setAttribute('data-turn', game.turn());
+      promotionPanel.hidden = !pendingPromotion;
+      if (pendingPromotion) {
+        boardStatus.textContent = 'Choose a piece to complete the promotion.';
+        ['q','r','b','n'].forEach(type => {
+          document.getElementById('promote-' + type).innerHTML =
+            '<span aria-hidden="true">' + pieceArtwork[pendingPromotion.color + type.toUpperCase()] + '</span>' +
+            pieceNames[type][0].toUpperCase() + pieceNames[type].slice(1);
+        });
+      } else if (game.in_checkmate()) {
+        boardStatus.textContent = 'Checkmate. ' + (game.turn() === 'w' ? 'Black' : 'White') + ' wins.';
+      } else if (finished) {
+        const result = document.getElementById('result').value;
+        boardStatus.textContent = result === '1/2-1/2' ? 'Game drawn.' : result === '*' ? 'Game finished.' : (result === '1-0' ? 'White' : 'Black') + ' wins.';
+      } else if (selectedSquare) {
+        boardStatus.textContent = moves.length ? 'Choose a highlighted square. Tap the selected piece to cancel.' : 'This piece has no legal moves. Choose another piece.';
+      } else {
+        boardStatus.textContent = 'Tap a piece, then a highlighted square.';
+      }
     }
 
-    function showBuf() {
-      currentEl.value = buf;
-      currentEl.setSelectionRange(currentEl.value.length, currentEl.value.length);
+    function cancelBoardSelection() {
+      selectedSquare = null;
+      pendingPromotion = null;
+      promotionPanel.hidden = true;
     }
 
-    function append(v) {
-      if (v === 'O-O' || v === 'O-O-O') buf = v;
-      else buf += v;
+    function completeBoardMove(move) {
+      const played = game.move(move);
+      if (!played) {
+        errorEl.textContent = 'That move is not legal.';
+        return;
+      }
+      boardFocusSquare = played.to;
+      cancelBoardSelection();
       errorEl.textContent = '';
-      showBuf();
-      focusMoveInput();
+      updateAll();
+      saveState();
+      boardSquares.get(boardFocusSquare).focus({ preventScroll: true });
     }
 
-    currentEl.addEventListener('input', () => {
-      buf = currentEl.value;
+    function handleSquareClick(square) {
+      if (pendingPromotion) return;
+      if (window._ended || game.game_over()) {
+        errorEl.textContent = 'Game over';
+        return;
+      }
+      boardFocusSquare = square;
       errorEl.textContent = '';
-    });
+      const piece = game.get(square);
+      if (square === selectedSquare) {
+        cancelBoardSelection();
+      } else if (piece && piece.color === game.turn()) {
+        selectedSquare = square;
+      } else if (selectedSquare) {
+        const moves = game.moves({ square: selectedSquare, verbose: true }).filter(move => move.to === square);
+        if (!moves.length) {
+          errorEl.textContent = 'That move is not legal. Choose a highlighted square.';
+        } else if (moves[0].promotion) {
+          pendingPromotion = { from: selectedSquare, to: square, color: game.turn() };
+          renderBoard();
+          document.getElementById('promote-q').focus();
+          return;
+        } else {
+          completeBoardMove({ from: selectedSquare, to: square });
+          return;
+        }
+      } else {
+        errorEl.textContent = 'Select a ' + (game.turn() === 'w' ? 'White' : 'Black') + ' piece to move.';
+      }
+      renderBoard();
+    }
 
-    currentEl.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        submitMove();
-      } else if (e.key === 'Escape') {
-        e.preventDefault();
-        buf = '';
-        errorEl.textContent = '';
-        showBuf();
+    function choosePromotion(type) {
+      if (!pendingPromotion || !['q','r','b','n'].includes(type)) return;
+      completeBoardMove({ from: pendingPromotion.from, to: pendingPromotion.to, promotion: type });
+    }
+
+    for (let rank = 8; rank >= 1; rank--) {
+      for (const file of 'abcdefgh') {
+        const square = file + rank;
+        const button = document.getElementById('sq-' + square);
+        boardSquares.set(square, button);
+        button.addEventListener('click', () => handleSquareClick(square));
+        button.addEventListener('keydown', event => {
+          const directions = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, 1], ArrowDown: [0, -1] };
+          if (!directions[event.key]) return;
+          event.preventDefault();
+          const [dx, dy] = directions[event.key];
+          const nextFile = Math.max(0, Math.min(7, 'abcdefgh'.indexOf(file) + dx));
+          const nextRank = Math.max(1, Math.min(8, rank + dy));
+          boardFocusSquare = 'abcdefgh'[nextFile] + nextRank;
+          boardSquares.forEach((node, key) => { node.tabIndex = key === boardFocusSquare ? 0 : -1; });
+          boardSquares.get(boardFocusSquare).focus({ preventScroll: true });
+        });
+      }
+    }
+    ['q','r','b','n'].forEach(type => document.getElementById('promote-' + type).addEventListener('click', () => choosePromotion(type)));
+    document.getElementById('cancelPromotion').addEventListener('click', () => {
+      const from = pendingPromotion && pendingPromotion.from;
+      cancelBoardSelection();
+      if (from) boardFocusSquare = from;
+      renderBoard();
+      boardSquares.get(boardFocusSquare).focus({ preventScroll: true });
+    });
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && (selectedSquare || pendingPromotion)) {
+        event.preventDefault();
+        const from = pendingPromotion ? pendingPromotion.from : selectedSquare;
+        cancelBoardSelection();
+        boardFocusSquare = from;
+        renderBoard();
+        boardSquares.get(from).focus({ preventScroll: true });
       }
     });
-
-    document.querySelectorAll('.pad button').forEach(btn => {
-      btn.addEventListener('click', () => append(btn.dataset.v));
-    });
-
-    document.getElementById('backspace').addEventListener('click', () => {
-      if (buf === 'O-O' || buf === 'O-O-O') buf = '';
-      else buf = buf.slice(0, -1);
-      errorEl.textContent = '';
-      showBuf();
-      focusMoveInput();
-    });
-
-    document.getElementById('clearMove').addEventListener('click', () => {
-      buf = '';
-      errorEl.textContent = '';
-      showBuf();
-      focusMoveInput();
-    });
-
 
     function saveState() {
       // A failed restore must remain recoverable, even after further edits.
@@ -392,7 +501,7 @@ var Chess=function(r){var u="b",s="w",l=-1,_="p",A="n",S="b",m="r",y="q",p="k",t
           result: document.getElementById('result').value
         },
         ended: !!window._ended,
-        buf: buf
+        buf: legacyDraft
       };
       localStorage.setItem('cn-game', JSON.stringify(state));
     }
@@ -440,11 +549,8 @@ var Chess=function(r){var u="b",s="w",l=-1,_="p",A="n",S="b",m="r",y="q",p="k",t
         }
         game = restoredGame;
         window._ended = !!state.ended;
-        buf = state.buf || '';
-        showBuf();
-        if (!window._ended) updateGameState();
-        updateMoves();
-        updatePgn();
+        legacyDraft = state.buf || '';
+        updateAll();
         return true;
       } catch (e) {
         recoveryBlocked = true;
@@ -453,29 +559,6 @@ var Chess=function(r){var u="b",s="w",l=-1,_="p",A="n",S="b",m="r",y="q",p="k",t
         return false;
       }
     }
-
-    function submitMove() {
-      if (!buf) return;
-      if (window._ended || game.game_over()) {
-        errorEl.textContent = 'Game over';
-        return;
-      }
-      errorEl.textContent = '';
-      // strip optional e.p. for parser; chess.js does not need it
-      let san = buf.replace(/\s*e\.p\.\s*$/i, '');
-      const move = game.move(san, { sloppy: true });
-      if (move === null) {
-        errorEl.textContent = 'Illegal: ' + buf;
-        return;
-      }
-      buf = '';
-      showBuf();
-      updateAll();
-      saveState();
-      focusMoveInput();
-    }
-
-    document.getElementById('submit').addEventListener('click', submitMove);
 
     function updateGameState() {
       if (window._ended) return;
@@ -488,14 +571,17 @@ var Chess=function(r){var u="b",s="w",l=-1,_="p",A="n",S="b",m="r",y="q",p="k",t
 
     function updateMoves() {
       const h = game.history();
+      const count = Math.ceil(h.length / 2);
+      document.getElementById('moveCount').textContent = count + (count === 1 ? ' move' : ' moves');
       if (!h.length) { movesEl.textContent = 'No moves yet'; return; }
       let t = '';
       for (let i = 0; i < h.length; i += 2) {
-        t += (Math.floor(i/2)+1) + '. ' + h[i];
-        if (h[i+1]) t += '   ' + h[i+1];
-        t += '\n';
+        // SAN comes from the legal move history generated by chess.js.
+        t += '<div class="move-row"><span class="move-number">' + (Math.floor(i/2)+1) + '. </span>' +
+          '<span>' + h[i] + (h[i+1] ? '   ' : '') + '</span><span>' + (h[i+1] || '') + '</span></div>\n';
       }
-      movesEl.textContent = t;
+      movesEl.innerHTML = t;
+      movesEl.scrollTop = movesEl.scrollHeight;
     }
 
     function toPgnTimeControl(value) {
@@ -529,6 +615,7 @@ var Chess=function(r){var u="b",s="w",l=-1,_="p",A="n",S="b",m="r",y="q",p="k",t
       updateGameState();
       updateMoves();
       updatePgn();
+      renderBoard();
     }
 
     document.getElementById('resign').addEventListener('click', () => {
@@ -537,9 +624,8 @@ var Chess=function(r){var u="b",s="w",l=-1,_="p",A="n",S="b",m="r",y="q",p="k",t
       const result = game.turn() === 'w' ? '0-1' : '1-0';
       document.getElementById('result').value = result;
       window._ended = true;
-      buf = '';
-      showBuf();
-      updatePgn();
+      cancelBoardSelection();
+      updateAll();
       saveState();
     });
 
@@ -548,22 +634,20 @@ var Chess=function(r){var u="b",s="w",l=-1,_="p",A="n",S="b",m="r",y="q",p="k",t
       if (!confirm('Agree to draw?')) return;
       document.getElementById('result').value = '1/2-1/2';
       window._ended = true;
-      buf = '';
-      showBuf();
-      updatePgn();
+      cancelBoardSelection();
+      updateAll();
       saveState();
     });
 
     document.getElementById('undo').addEventListener('click', () => {
+      cancelBoardSelection();
       if (window._ended) {
         window._ended = false;
       } else {
         game.undo();
       }
       document.getElementById('result').value = '*';
-      buf = '';
       errorEl.textContent = '';
-      showBuf();
       updateAll();
       saveState();
     });
@@ -576,14 +660,15 @@ var Chess=function(r){var u="b",s="w",l=-1,_="p",A="n",S="b",m="r",y="q",p="k",t
       localStorage.removeItem('cn-game');
       recoveryBlocked = false;
       recoveryWarning.hidden = true;
+      cancelBoardSelection();
+      boardFocusSquare = 'e2';
+      legacyDraft = '';
       game.reset();
       window._ended = false;
-      buf = '';
       document.getElementById('result').value = '*';
       dateUserSet = false;
       document.getElementById('date').value = '';
       errorEl.textContent = '';
-      showBuf();
       updateAll();
     });
 
@@ -603,7 +688,11 @@ var Chess=function(r){var u="b",s="w",l=-1,_="p",A="n",S="b",m="r",y="q",p="k",t
     });
 
     ['event','site','round','white','black','timeControl','result'].forEach(id =>
-      document.getElementById(id).addEventListener('input', () => { updatePgn(); saveState(); })
+      document.getElementById(id).addEventListener('input', () => {
+        updatePgn();
+        if (id === 'result') renderBoard();
+        saveState();
+      })
     );
 
     document.getElementById('date').addEventListener('input', () => {
@@ -612,13 +701,11 @@ var Chess=function(r){var u="b",s="w",l=-1,_="p",A="n",S="b",m="r",y="q",p="k",t
       saveState();
     });
 
-    showBuf();
     if (!loadState()) {
       dateUserSet = false;
       document.getElementById('date').value = '';
       updateAll();
     }
-    focusMoveInput();
   </script>
 </body>
 </html>

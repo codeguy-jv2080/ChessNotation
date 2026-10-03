@@ -1,6 +1,7 @@
 # Chess Notation
 
-A single-file browser application for entering chess game notation and exporting the finished game as PGN.
+A single-file, offline browser application for recording chess games by moving
+pieces on a board and exporting the game as PGN.
 
 The repository centers on:
 
@@ -8,7 +9,12 @@ The repository centers on:
 
 ## Features
 
-- Enter moves with the on-screen notation buttons or a physical keyboard
+- Tap or click a piece, then a highlighted destination to record a move
+- Cream-and-brown board with embedded Cburnett SVG pieces
+- Legal destination, last-move, and check highlighting
+- Promotion picker with queen, rook, bishop, and knight choices
+- Navigate board squares with arrow keys, activate with Enter/Space, and cancel
+  selection or promotion with Escape
 - Supports standard chess notation including:
   - Piece moves
   - Captures
@@ -34,7 +40,9 @@ The repository centers on:
 - Copy PGN to the clipboard
 - Download the completed game as a `.pgn` file
 - Saves the current game in browser local storage
-- Light and dark themes
+- Visible Light and Dark buttons; board and piece colors stay the same in both
+- Responsive layout with a compact move list beside the board on desktop and
+  below the board on smaller screens
 
 ## Usage
 
@@ -46,9 +54,16 @@ Open the HTML file directly in a web browser:
 chess-notation-paper-style-keyboard-entry.html
 ```
 
-Enter the game information, then enter each move and press **Enter Move** or press **Enter** on the keyboard.
+Enter the game information, then tap or click a piece belonging to the side to
+move. Legal destinations are highlighted. Tap or click a destination to make the
+move and automatically update the move list and PGN.
 
-The application validates each move before adding it to the game.
+To castle, select the king and its castling destination. When a pawn reaches the
+last rank, choose its promotion piece. Tap the selected piece again, or press
+Escape, to cancel a selection. Use **Undo** to undo a recorded move.
+
+The application validates every move. It records both sides of the game; it does
+not supply a computer opponent. Board entry uses two taps/clicks, not dragging.
 
 ## PGN Export
 
@@ -78,6 +93,14 @@ The current game is automatically saved in the browser's local storage so it can
 
 Using **Reset** clears the saved game.
 
+Existing saves from the earlier keypad version restore directly to the board.
+Keep using the same HTML file location and browser profile to retain access to
+that browser's saved game and theme. No migration or storage reset is needed.
+
+If a saved game cannot be restored, its original data is preserved and a warning
+explains that autosaving is paused. Reset requires confirmation before discarding
+that unreadable save. Valid saves are not rewritten during startup.
+
 ## Requirements
 
 A modern web browser with JavaScript enabled.
@@ -89,3 +112,18 @@ The application is self-contained in a single HTML file and does not require a s
 Chess Notation is licensed under GPL-3.0-or-later. See `LICENSE`.
 The embedded chess.js code remains under its BSD 2-Clause license; see
 `THIRD_PARTY_NOTICES.md` and the preserved notice inside the HTML file.
+The Cburnett pieces are by Colin M. L. Burnett and are included under the GPL
+license option; see `THIRD_PARTY_NOTICES.md` for artwork sources and attribution.
+
+## Development checks
+
+With Node.js installed, run the background regression tests:
+
+```text
+node --test tests/*.test.cjs
+```
+
+Tests use simulated page elements and storage, including fresh defaults, board
+input, special moves, undo/reset, theme switching, and recovery protection. They
+do not access real browser profiles or saved games. Node.js is needed only for
+these development checks, not to use the HTML app.
